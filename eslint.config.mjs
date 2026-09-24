@@ -6,7 +6,13 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['node_modules/', 'cypress/screenshots/', 'cypress/videos/', 'cypress/downloads/'],
+    ignores: [
+      'node_modules/',
+      'cypress/screenshots/',
+      'cypress/videos/',
+      'cypress/downloads/',
+      'cypress/reports/',
+    ],
   },
   js.configs.recommended,
   {

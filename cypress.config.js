@@ -28,5 +28,13 @@ module.exports = defineConfig({
     retries: { runMode: 0, openMode: 0 },
     video: false,
     screenshotOnRunFailure: true,
+    reporter: 'cypress-multi-reporters',
+    reporterOptions: {
+      reporterEnabled: 'spec, mocha-junit-reporter',
+      mochaJunitReporterReporterOptions: {
+        mochaFile: 'cypress/reports/junit/results-[hash].xml',
+        testsuitesTitle: 'Cypress E2E',
+      },
+    },
   },
 });
