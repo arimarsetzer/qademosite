@@ -1,0 +1,23 @@
+{
+  "complete": {
+    "firstName": "Ann",
+    "lastName": "Lee",
+    "email": "ann.lee@example.com",
+    "gender": "Female",
+    "mobile": "9876543210",
+    "dateOfBirth": { "day": 15, "month": "May", "year": 1990 },
+    "subjects": ["Maths", "English"],
+    "hobbies": ["Sports", "Music"],
+    "picture": "profile.png",
+    "address": "221B Baker Street, London",
+    "state": "NCR",
+    "city": "Delhi"
+  },
+  "requiredOnly": {
+    "firstName": "Bruno",
+    "lastName": "Silva",
+    "gender": "Male",
+    "mobile": "9123456780"
+  },
+  "invalidEmails": ["ann@invalid", "ann.example.com", "ann@example.c"]
+}
