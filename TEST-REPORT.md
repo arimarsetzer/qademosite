@@ -61,7 +61,7 @@ The first run had 22 tests: 19 passed, 2 failed, 1 skipped (DEF-002). Each failu
 
 ## CI/CD recommendations
 
-- **GitHub Actions:** `.github/workflows/e2e.yml` runs on push to `main` and manually (the `cli` input can replace the test command). It installs, lints, checks formatting, runs `npm test` in Chrome, and uploads failure screenshots (kept 14 days). _The workflow has not yet been run on GitHub. Lint, format check and suite were checked locally._
+- **GitHub Actions:** `.github/workflows/e2e.yml` runs on push to `main` and manually (the `cli` input can replace the test command). It installs, lints, checks formatting, runs `npm test` in Chrome, publishes the JUnit results as a GitHub check and job summary, and uploads the JUnit XML and failure screenshots (kept 14 days). _The workflow has not yet been run on GitHub. Lint, format check and suite were checked locally._
 - **Pull requests:** add a `pull_request` trigger so every change is checked before it merges, not only after it reaches `main`.
 - **Suites:**
   - A smoke subset (full form submit, Check Box root, radio switch, confirm OK, small modal; about 15 s) on every pull request.
@@ -69,7 +69,7 @@ The first run had 22 tests: 19 passed, 2 failed, 1 skipped (DEF-002). Each failu
 - **Tagging:** add `@cypress/grep` with `@smoke`, `@regression` and `@known-defect` tags instead of path-based selection once the suite grows.
 - **Parallelisation:** not worth it at about 30 s. Beyond about 5 minutes, split by spec with a CI matrix or Cypress Cloud load balancing.
 - **Test data:** keep fixtures in git and deterministic; no shared state between tests. If a stateful area is added later (e.g. Book Store), create and clean up data through the API, not the UI.
-- **Artifacts and reporting:** screenshots only on failure. Add a JUnit or Mochawesome reporter for per-test results in the pull request summary. Videos are optional and only on failure, to save minutes.
+- **Artifacts and reporting:** JUnit XML is already generated and published as a GitHub check. Next steps: feed the same XML into a test-analytics tool to track flake rate and duration trends across runs, and keep screenshots (and optional videos) only on failure to save minutes.
 - **Retries:** keep them at 0. If CI needs `runMode: 1`, treat every "passed on retry" as a flake ticket with an owner, not as a pass.
 - **Maintenance:**
   - Review selectors when DemoQA ships a new bundle; the asset hash in `index-*.js` is a cheap change signal.

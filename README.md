@@ -56,14 +56,14 @@ A successful run ends with `All specs passed!` and a table showing 23 tests: 21 
 
 - **ESLint** (`eslint.config.mjs`) uses the flat config. Besides the recommended rules, it fails on `cy.wait(<ms>)` (`cypress/no-unnecessary-waiting`), on a forgotten `it.only` (`mocha/no-exclusive-tests`), and on duplicate test titles.
 - **Prettier** (`.prettierrc.json`) owns formatting. `eslint-config-prettier` turns off ESLint's formatting rules so the two tools don't conflict.
-- `.gitattributes` forces LF line endings, so the Prettier check gives the same result on Windows (`core.autocrlf=true`) and in CI.
 
 ## Results and artifacts
 
 - **Terminal:** per-test results and a summary table at the end of every run. The output of the last full run is saved in [`docs/evidence/run-summary.txt`](docs/evidence/run-summary.txt).
+- **JUnit XML:** every run writes one file per spec to `cypress/reports/junit/`, via `cypress-multi-reporters` (terminal output plus `mocha-junit-reporter`). `npm test` deletes the folder first, so it only ever holds the latest run. In CI these files are published as a GitHub check (see [CI](#ci)).
 - **Screenshots:** `cypress/screenshots/<spec>/`, taken automatically for each failed test.
 - **Videos:** off by default. Enable them for one run with `npx cypress run --browser chrome --config video=true`; they are saved to `cypress/videos/`.
-- Screenshots and videos are gitignored. Evidence for the defects is kept in [`docs/evidence/`](docs/evidence/).
+- Reports, screenshots and videos are gitignored. Evidence for the defects is kept in [`docs/evidence/`](docs/evidence/).
 
 ## Project structure
 
@@ -84,8 +84,8 @@ cypress/
     e2e.js                   # ignores errors from third-party scripts only
     utils/dialogs.js         # stubAlert, answerConfirm, answerPrompt
     utils/text.js            # exactText: exact, regex-safe text matching
-cypress.config.js            # baseUrl, timeouts, viewport, blocked ad hosts, retries
-eslint.config.mjs, .prettierrc.json, .prettierignore, .gitattributes
+cypress.config.js            # baseUrl, timeouts, viewport, blocked ad hosts, retries, reporters
+eslint.config.mjs, .prettierrc.json, .prettierignore
 .github/workflows/e2e.yml    # CI
 ```
 
@@ -93,7 +93,15 @@ eslint.config.mjs, .prettierrc.json, .prettierignore, .gitattributes
 
 `.github/workflows/e2e.yml` runs on every push to `main`, and manually from the Actions tab. On a manual run, the `cli` input can replace the test command (default: `npm test`).
 
-Steps: install with `npm ci`, lint, check formatting, run the Cypress suite in Chrome, and upload failure screenshots (kept 14 days).
+Steps:
+
+1. Install with `npm ci`.
+2. Lint and check formatting.
+3. Run the Cypress suite in Chrome.
+4. **Publish the JUnit report** with [`mikepenz/action-junit-report`](https://github.com/mikepenz/action-junit-report). It creates a **"Cypress JUnit Report"** check on the commit, adds a per-test table to the run's **Summary** page, and annotates failed tests inline. This step runs even when tests fail. It also fails if no test results were produced, so a broken reporter setup can't look like a pass.
+5. Upload the JUnit XML (`cypress-junit-report`) as an artifact, and failure screenshots when something fails. Both are kept 14 days.
+
+The workflow needs `checks: write` permission to create the check; this is set in the file.
 
 ## Troubleshooting
 
